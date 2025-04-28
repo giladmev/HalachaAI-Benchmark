@@ -1,0 +1,50 @@
+[
+  {
+    "original_question": "הבוקר התלבשתי במהירות ולא שמתי לב שהפכתי את החולצה שלי כך שהתפרים נראים מבחוץ. חבר אמר לי שזה לא ראוי על פי ההלכה. האם הוא צודק?",
+    "true_answer": "כן",
+    "model_answer": "כן",
+    "correct": "True",
+    "true_source": "שו\"ע או\"ח ב':ג'",
+    "model_source": "שו\"ע או\"ח ב':א",
+    "correct_answer": true,
+    "correct_siman": true,
+    "correct_saif": false,
+    "correct_all": false
+  },
+  {
+    "original_question": "הבוקר נעלתי קודם את הנעל הימנית, קשרתי את השרוך שלה, ואז נעלתי את הנעל השמאלית וקשרתי אותה. האם פעלתי לפי הדין?",
+    "true_answer": "לא",
+    "model_answer": "כן",
+    "correct": "False",
+    "true_source": "שו\"ע או\"ח ב:ד",
+    "model_source": "שו\"ע או\"ח ב:ב",
+    "correct_answer": false,
+    "correct_siman": true,
+    "correct_saif": false,
+    "correct_all": false
+  },
+  {
+    "original_question": "בערב כשאני חוזר מהעבודה, אני נוהג לחלוץ קודם את הנעל הימנית ואחר כך את השמאלית. חבר אמר לי שאני לא נוהג לפי ההלכה. האם הוא צודק?",
+    "true_answer": "כן",
+    "model_answer": "מחלוקת שו\"ע-רמ\"א",
+    "correct": "False",
+    "true_source": "שו\"ע או\"ח ב:ה",
+    "model_source": "שו\"ע או\"ח ב:ד, רמ\"א שם",
+    "correct_answer": false,
+    "correct_siman": true,
+    "correct_saif": false,
+    "correct_all": false
+  },
+  {
+    "original_question": "לפני כמה ימים קניתי טלית קטן חדש. כשלבשתי אותו בפעם הראשונה, בירכתי \"להתעטף בציצית\". חבר אמר לי שיש לברך \"על מצוות ציצית\" על טלית קטן, ולא \"להתעטף\". האם החבר שלי צודק?",
+    "true_answer": "מחלוקת שו\"ע-רמ\"א",
+    "model_answer": "מחלוקת שו\"ע-רמ\"א",
+    "correct": "True",
+    "true_source": "שו\"ע או\"ח ח:ו",
+    "model_source": "שו\"ע או\"ח ח':ט, רמ\"א שם",
+    "correct_answer": true,
+    "correct_siman": true,
+    "correct_saif": false,
+    "correct_all": false
+  }
+]
