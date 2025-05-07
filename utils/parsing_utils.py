@@ -1,7 +1,7 @@
 import re
 from typing import List, Dict
 from constants import ALLOWED_ANSWERS
-
+import os
 def parse_questions(file_path: str) -> List[Dict[str, str]]:
     """
     Parses a text file with questions and answers in a specific format.
@@ -13,7 +13,7 @@ def parse_questions(file_path: str) -> List[Dict[str, str]]:
         List[Dict[str, str]]: A list of dictionaries, each containing a question, answer, source, and additional text.
     """
     questions = []
-
+    print('the files in file_path directoery', os.listdir(os.path.dirname(file_path)))
     # Read the entire file content
     with open(file_path, 'r', encoding='utf-8') as f:
         content = f.read()
@@ -47,7 +47,7 @@ def parse_questions(file_path: str) -> List[Dict[str, str]]:
 
     return questions
 
-def parse_model_response(response_text: str) -> Dict[str, str]:
+def parse_model_response(response_text: str):
     """
     Parses Claude's response text into answer and source fields,
     validating the answer against allowed answers.
@@ -67,7 +67,8 @@ def parse_model_response(response_text: str) -> Dict[str, str]:
     if answer not in ALLOWED_ANSWERS:
         print(f"Warning: Model answer '{answer}' is not in allowed answers.")
         answer = None  # Not a valid answer
-
+    #search the thinking tag
+    thinking_text = re.search()
     return {
         "model_answer": answer,
         "model_source": source,

@@ -1,13 +1,13 @@
 import time
 from typing import List, Dict
 import anthropic
-from parsing_utils import parse_questions, parse_model_response, parse_source
+from utils.parsing_utils import parse_questions, parse_model_response, parse_source
 from constants import ALLOWED_ANSWERS, API_KEY, MODEL_NAME
-from files_utils import load_results_from_csv, save_results_to_json, save_results_to_csv
+from utils.files_utils import load_results_from_csv, save_results_to_json, save_results_to_csv
 from pathlib import Path
 
 
-def build_prompt(question: str) -> str:
+def build_prompt(question: str, thinking=False) -> str:
     """
     Builds the full prompt to send to Claude for a given question.
 
@@ -23,6 +23,7 @@ def build_prompt(question: str) -> str:
 - יש להשיב בעברית.
 - יש לענות על פי שולחן ערוך בלבד, כולל הגהות הרמ"א.
 - יש לציין בתשובה את המקורות עליהם הסתמכת בפורמט מסוים כפי שתראה בדוגמאות.
+{"יש לבצע תהליך חשיבה לפני המענה" if thinking else ""}
 - {allowed_answers_text}
 
 דוגמא למענה:
@@ -35,15 +36,17 @@ def build_prompt(question: str) -> str:
 
 כל שאלה עומדת בפני עצמה ללא תלות בשאלות קודמות או הבאות.
 """
+    if thinking:
+        instructions += "\nאת תהליך החשיבה יש לשים בתוך תג thinking.\n\n"
     return f"{instructions}\n\nשאלה: {question}"
 
-def ask_claude(client, model_name, question):
+def ask_claude(client, model_name, question, thinking = False):
     try:
         response = client.messages.create(
             model=model_name,
             max_tokens=1000,
             messages=[
-                {"role": "user", "content": build_prompt(question)}
+                {"role": "user", "content": build_prompt(question, thinking)}
             ]
         )
         return response.content[0].text  # Assuming the response has content
@@ -121,15 +124,16 @@ def calculate_statistics(results: List[Dict[str, str]]) -> Dict[str, float]:
 
 
 def main():
-    skip_api_calls = True
+    skip_api_calls = False  # Set to True to skip API calls and load existing results
+    thinking = True  # Set to True to enable thinking mode
 
     input_dir = Path("data/input")
     output_dir = Path("data/output")
 
     questions_file = input_dir / "questions.txt"
-    output_csv = output_dir / "results.csv"
-    output_json = output_dir / "results.json"
-    results_summary_json = output_dir / "results_summary.json"
+    output_csv = output_dir / f"results{'_thinking' if thinking else ''}.csv"
+    output_json = output_dir / f"results{'_thinking' if thinking else ''}.json"
+    results_summary_json = output_dir / f"results_summary{'_thinking' if thinking else ''}.json"
 
     if not skip_api_calls:
         client = anthropic.Anthropic(api_key=API_KEY)
@@ -139,7 +143,7 @@ def main():
         for idx, q in enumerate(questions):
             print(f"Processing question {idx+1}/{len(questions)}...")
 
-            model_response_text = ask_claude(client, MODEL_NAME, q["question"])
+            model_response_text = ask_claude(client, MODEL_NAME, q["question"], thinking=thinking)
             if model_response_text is None:
                 continue
             model_response = parse_model_response(model_response_text)

@@ -1,0 +1,11 @@
+{
+  "total_questions": 4,
+  "correct_answer_count": 1,
+  "correct_answer_accuracy": 25.0,
+  "correct_siman_count": 3,
+  "correct_siman_accuracy": 75.0,
+  "correct_saif_count": 1,
+  "correct_saif_accuracy": 25.0,
+  "correct_all_count": 0,
+  "correct_all_accuracy": 0.0
+}
