@@ -2,24 +2,25 @@ import time
 from typing import List, Dict
 import anthropic
 from utils.parsing_utils import parse_questions, parse_model_response, parse_source
-from constants import ALLOWED_ANSWERS, API_KEY, MODEL_NAME
 from utils.files_utils import load_results_from_csv, save_results_to_json, save_results_to_csv
 from pathlib import Path
+import os
+import yaml
 
 
-def build_prompt(question: str, thinking=False) -> str:
+API_KEY = os.getenv('ANTHROPIC_API_KEY')
+
+# os.environ["http_proxy"] =""
+# os.environ["https_proxy"] =""
+# os.environ["no_proxy"] =".openai.azure.com, 10.*, .intel.com, 127.*,localhost"
+
+def build_prompt(question: str, allowed_answers: list, thinking=False) -> str:
     """
     Builds the full prompt to send to Claude for a given question.
-
-    Args:
-        question (str): The user question.
-
-    Returns:
-        str: The complete prompt including the system instructions and the question.
     """
-    allowed_answers_text = "רק אחת מהתשובות הבאות מותרת: " + ", ".join(ALLOWED_ANSWERS) + "."
+    allowed_answers_text = "רק אחת מהתשובות הבאות מותרת: " + ", ".join(allowed_answers) + "."
     instructions = f"""אתה מומחה להלכה היהודית. עליך לענות על שאלה בהלכה על פי ההנחיות הבאות:
-- תשובה קצרה ותמציתית. התשובה יכולה להיות {', '.join(ALLOWED_ANSWERS)} בלבד.
+- תשובה קצרה ותמציתית. התשובה יכולה להיות {', '.join(allowed_answers)} בלבד.
 - יש להשיב בעברית.
 - יש לענות על פי שולחן ערוך בלבד, כולל הגהות הרמ"א.
 - יש לציין בתשובה את המקורות עליהם הסתמכת בפורמט מסוים כפי שתראה בדוגמאות.
@@ -40,13 +41,13 @@ def build_prompt(question: str, thinking=False) -> str:
         instructions += "\nאת תהליך החשיבה יש לשים בתוך תג thinking.\n\n"
     return f"{instructions}\n\nשאלה: {question}"
 
-def ask_claude(client, model_name, question, thinking = False):
+def ask_claude(client, model_name, question, allowed_answers, thinking = False):
     try:
         response = client.messages.create(
             model=model_name,
             max_tokens=1000,
             messages=[
-                {"role": "user", "content": build_prompt(question, thinking)}
+                {"role": "user", "content": build_prompt(question, allowed_answers, thinking)}
             ]
         )
         return response.content[0].text  # Assuming the response has content
@@ -56,17 +57,18 @@ def ask_claude(client, model_name, question, thinking = False):
 
 def compare_sources(true_source: str, model_source: str):
     """Compare true source and model source by siman and saif."""
-    true_siman, true_saif = parse_source(true_source)
-    model_siman, model_saif = parse_source(model_source)
+    true_phase, true_siman, true_saif = parse_source(true_source)
+    model_phase, model_siman, model_saif = parse_source(model_source)
 
     # If parsing failed
     if not true_siman or not model_siman:
-        return False, False
+        return False, False, False
 
+    phase_match = (true_phase == model_phase)
     siman_match = (true_siman == model_siman)
     saif_match = (true_saif == model_saif)
 
-    return siman_match, saif_match
+    return phase_match, siman_match, saif_match
 
 def enrich_result_row(row, allowed_answers):
     """
@@ -80,13 +82,14 @@ def enrich_result_row(row, allowed_answers):
     true_answer = row.get("true_answer", "").strip()
     model_answer = row.get("model_answer", "").strip()
 
-    row["correct_answer"] = (true_answer == model_answer) and (true_answer in allowed_answers)
+    row["correct_answer"] = (model_answer in allowed_answers) and (true_answer == model_answer)
 
     # Compare sources (siman and saif)
     true_source = row.get("true_source", "")
     model_source = row.get("model_source", "")
 
-    siman_match, saif_match = compare_sources(true_source, model_source)
+    phase_match, siman_match, saif_match = compare_sources(true_source, model_source)
+    row["correct_phase"] = phase_match
     row["correct_siman"] = siman_match
     row["correct_saif"] = saif_match
 
@@ -106,6 +109,7 @@ def calculate_statistics(results: List[Dict[str, str]]) -> Dict[str, float]:
     check_fields = [
         'correct_answer',
         'correct_siman',
+        'correct_phase',
         'correct_saif',
         'correct_all',
     ]
@@ -117,61 +121,72 @@ def calculate_statistics(results: List[Dict[str, str]]) -> Dict[str, float]:
         stats[f"{field}_accuracy"] = round(accuracy, 2)
 
     print(f"Total Questions: {stats['total_questions']}")
-    for field in ['correct_answer', 'correct_siman', 'correct_saif', 'correct_all']:
+    for field in check_fields:
         print(f"{field} - Correct: {stats[f'{field}_count']}/{stats['total_questions']} ({stats[f'{field}_accuracy']:.2f}%)")
 
     return stats
 
+def load_config(path="config.yaml"):
+    with open(path, 'r') as f:
+        return yaml.safe_load(f)
 
 def main():
-    skip_api_calls = False  # Set to True to skip API calls and load existing results
-    thinking = True  # Set to True to enable thinking mode
+    config = load_config()
 
-    input_dir = Path("data/input")
-    output_dir = Path("data/output")
+    skip_api_calls = config['skip_api_calls']
+    thinking = config['thinking']
 
-    questions_file = input_dir / "questions.txt"
-    output_csv = output_dir / f"results{'_thinking' if thinking else ''}.csv"
-    output_json = output_dir / f"results{'_thinking' if thinking else ''}.json"
-    results_summary_json = output_dir / f"results_summary{'_thinking' if thinking else ''}.json"
+    input_dir = Path(config['input_dir'])
+    output_base_dir = Path(config['output_base_dir'])
 
-    if not skip_api_calls:
-        client = anthropic.Anthropic(api_key=API_KEY)
-        questions = parse_questions(questions_file)
+    questions_file = input_dir / config['questions_file']
+    model_names = config['model_names']
+    allowed_answers = config['allowed_answers']
 
-        results = []
-        for idx, q in enumerate(questions):
-            print(f"Processing question {idx+1}/{len(questions)}...")
+    for model_name in model_names:
+        output_dir = output_base_dir / model_name
+        output_dir.mkdir(parents=True, exist_ok=True)
 
-            model_response_text = ask_claude(client, MODEL_NAME, q["question"], thinking=thinking)
-            if model_response_text is None:
-                continue
-            model_response = parse_model_response(model_response_text)
+        output_csv = output_dir / f"results{'_thinking' if thinking else ''}.csv"
+        output_json = output_dir / f"results{'_thinking' if thinking else ''}.json"
+        results_summary_json = output_dir / f"results_summary{'_thinking' if thinking else ''}.json"
+        if not skip_api_calls:
+            client = anthropic.Anthropic(api_key=API_KEY)
+            questions = parse_questions(questions_file)
 
-            results.append({
-                "original_question": q['question'],
-                "true_answer": q['answer'],
-                "true_source": q['source'],
-                "model_full_response": model_response_text,
-                "model_answer": model_response.get('model_answer'),
-                "model_source": model_response.get('model_source'),
-            })
+            results = []
+            for idx, q in enumerate(questions):
+                print(f"Processing question {idx+1}/{len(questions)}...")
 
-            time.sleep(1)
+                model_response_text = ask_claude(client, model_name, q["question"], allowed_answers, thinking=thinking)
+                if model_response_text is None:
+                    continue
+                model_response = parse_model_response(model_response_text)
 
-        enriched_results = [enrich_result_row(row, ALLOWED_ANSWERS) for row in results]
+                results.append({
+                    "original_question": q['question'],
+                    "true_answer": q['answer'],
+                    "true_source": q['source'],
+                    "model_full_response": model_response_text,
+                    "model_answer": model_response.get('model_answer'),
+                    "model_source": model_response.get('model_source'),
+                })
 
-    else:
-        print("Loading existing results from CSV...")
+                time.sleep(1)
 
-        results = load_results_from_csv(output_csv)  # Load existing results from the CSV file
-        enriched_results = [enrich_result_row(row, ALLOWED_ANSWERS) for row in results]
+            enriched_results = [enrich_result_row(row, allowed_answers) for row in results]
 
-    save_results_to_csv(enriched_results, output_csv)
-    save_results_to_json(enriched_results, output_json)
+        else:
+            print("Loading existing results from CSV...")
 
-    statistics = calculate_statistics(enriched_results)
-    save_results_to_json(statistics, results_summary_json)
+            results = load_results_from_csv(output_csv)  # Load existing results from the CSV file
+            enriched_results = [enrich_result_row(row, allowed_answers) for row in results]
+
+        save_results_to_csv(enriched_results, output_csv)
+        save_results_to_json(enriched_results, output_json)
+
+        statistics = calculate_statistics(enriched_results)
+        save_results_to_json(statistics, results_summary_json)
 
 
 if __name__ == "__main__":

@@ -1,0 +1,15 @@
+skip_api_calls: false
+thinking: false
+
+input_dir: "data/input"
+output_base_dir: "data/output"
+
+questions_file: "questions.txt"
+model_names:
+  - claude-3-7-sonnet-20250219
+  - claude-sonnet-4-20250514
+
+allowed_answers:
+  - כן
+  - לא
+  - מחלוקת שו"ע-רמ"א

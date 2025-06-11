@@ -67,8 +67,7 @@ def parse_model_response(response_text: str):
     if answer not in ALLOWED_ANSWERS:
         print(f"Warning: Model answer '{answer}' is not in allowed answers.")
         answer = None  # Not a valid answer
-    #search the thinking tag
-    thinking_text = re.search()
+
     return {
         "model_answer": answer,
         "model_source": source,
@@ -79,6 +78,7 @@ def parse_source(source: str):
     """Parse source into (siman, saif), normalizing quotation marks."""
     if not source:
         return None, None
+    phase = next((s for s in ["או״ח", "אה״ע", "יו״ד", "חו״מ"] if s in source), None)
 
     # Remove quotation marks (׳, ״) from source
     source = re.sub(r"[׳״']", "", source)
@@ -88,6 +88,6 @@ def parse_source(source: str):
     if match:
         siman = match.group(1)
         saif = match.group(2)
-        return siman, saif
+        return phase, siman, saif
     else:
-        return None, None
+        return phase, None, None
