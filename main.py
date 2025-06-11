@@ -10,10 +10,6 @@ import yaml
 
 API_KEY = os.getenv('ANTHROPIC_API_KEY')
 
-# os.environ["http_proxy"] =""
-# os.environ["https_proxy"] =""
-# os.environ["no_proxy"] =".openai.azure.com, 10.*, .intel.com, 127.*,localhost"
-
 def build_prompt(question: str, allowed_answers: list, thinking=False) -> str:
     """
     Builds the full prompt to send to Claude for a given question.
