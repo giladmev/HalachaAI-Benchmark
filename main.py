@@ -186,7 +186,7 @@ def main():
         save_results_to_json(statistics, results_summary_json)
         all_models_results[model_name] = statistics
 
-    plot_model_comparison(all_models_results)
+    plot_model_comparison(all_models_results, output_base_dir)
 
 if __name__ == "__main__":
     main()

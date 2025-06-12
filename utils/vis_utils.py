@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
+import os
 
-def plot_model_comparison(results: dict):
+def plot_model_comparison(results: dict, output_dir: str):
     """
     Splits metrics into percentage-based (ending with 'accuracy') and absolute metrics.
     Creates and saves a separate bar chart for each type.
@@ -45,7 +46,8 @@ def plot_model_comparison(results: dict):
         ax.legend()
         ax.grid(True, linestyle='--', alpha=0.6)
         plt.tight_layout()
-        plt.savefig(filename, dpi=300)
+        filepath = os.path.join(output_dir, filename)
+        plt.savefig(filepath, dpi=300)
         plt.close()
 
     # Plot and save percentage-based metrics
