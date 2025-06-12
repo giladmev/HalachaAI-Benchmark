@@ -1,4 +1,4 @@
-skip_api_calls: false
+skip_api_calls: True
 thinking: false
 
 input_dir: "data/input"

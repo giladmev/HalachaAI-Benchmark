@@ -3,6 +3,7 @@ from typing import List, Dict
 import anthropic
 from utils.parsing_utils import parse_questions, parse_model_response, parse_source
 from utils.files_utils import load_results_from_csv, save_results_to_json, save_results_to_csv
+from utils.vis_utils import plot_model_comparison
 from pathlib import Path
 import os
 import yaml
@@ -138,7 +139,7 @@ def main():
     questions_file = input_dir / config['questions_file']
     model_names = config['model_names']
     allowed_answers = config['allowed_answers']
-
+    all_models_results = {}
     for model_name in model_names:
         output_dir = output_base_dir / model_name
         output_dir.mkdir(parents=True, exist_ok=True)
@@ -183,7 +184,9 @@ def main():
 
         statistics = calculate_statistics(enriched_results)
         save_results_to_json(statistics, results_summary_json)
+        all_models_results[model_name] = statistics
 
+    plot_model_comparison(all_models_results)
 
 if __name__ == "__main__":
     main()
