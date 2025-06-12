@@ -1,0 +1,13 @@
+{
+  "total_questions": 33,
+  "correct_answer_count": 18,
+  "correct_answer_accuracy": 54.55,
+  "correct_siman_count": 17,
+  "correct_siman_accuracy": 51.52,
+  "correct_phase_count": 32,
+  "correct_phase_accuracy": 96.97,
+  "correct_saif_count": 25,
+  "correct_saif_accuracy": 75.76,
+  "correct_all_count": 8,
+  "correct_all_accuracy": 24.24
+}
