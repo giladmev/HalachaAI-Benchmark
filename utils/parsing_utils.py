@@ -2,6 +2,14 @@ import re
 from typing import List, Dict
 from constants import ALLOWED_ANSWERS
 import os
+
+PART_ALIASES = {
+    'או"ח': {'או"ח', 'אורח חיים', 'אור"ח', 'אוח'},
+    'יו"ד': {'יו"ד', 'יורה דעה', 'יור"ד', 'יוד'},
+    'אה"ע': {'אה"ע', 'אבן העזר', 'אבה"ע', 'אהע'},
+    'חו"מ': {'חו"מ', 'חושן משפט', 'חו"מ', 'חומ', 'חוש', 'חום'},
+}
+
 def parse_questions(file_path: str) -> List[Dict[str, str]]:
     """
     Parses a text file with questions and answers in a specific format.
@@ -74,20 +82,27 @@ def parse_model_response(response_text: str):
     }
 
 
+
 def parse_source(source: str):
-    """Parse source into (siman, saif), normalizing quotation marks."""
+    """Parse source into (part, siman, saif), normalizing quotation marks and using aliases."""
     if not source:
-        return None, None
-    phase = next((s for s in ["או״ח", "אה״ע", "יו״ד", "חו״מ"] if s in source), None)
+        return None, None, None
 
-    # Remove quotation marks (׳, ״) from source
-    source = re.sub(r"[׳״']", "", source)
+    clean_source = re.sub(r"[׳״'\"]", "", source)
 
-    # Find siman:saif structure
-    match = re.search(r"([א-ת]+):([א-ת]+)", source)
+    part = None
+    for canonical, aliases in PART_ALIASES.items():
+        for alias in aliases:
+            if alias.replace('"', '').replace("'", '') in clean_source:
+                part = canonical
+                break
+        if part:
+            break
+
+    match = re.search(r"([א-ת]+):([א-ת]+)", clean_source)
     if match:
         siman = match.group(1)
         saif = match.group(2)
-        return phase, siman, saif
+        return part, siman, saif
     else:
-        return phase, None, None
+        return part, None, None

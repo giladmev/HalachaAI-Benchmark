@@ -1,13 +1,67 @@
 {
-  "total_questions": 33,
-  "correct_answer_count": 18,
-  "correct_answer_accuracy": 54.55,
-  "correct_siman_count": 17,
-  "correct_siman_accuracy": 51.52,
-  "correct_phase_count": 32,
-  "correct_phase_accuracy": 96.97,
-  "correct_saif_count": 25,
-  "correct_saif_accuracy": 75.76,
-  "correct_all_count": 8,
-  "correct_all_accuracy": 24.24
+  "או\"ח": {
+    "total_questions": 33,
+    "correct_answer_count": 22,
+    "correct_answer_accuracy": 66.67,
+    "correct_siman_count": 25,
+    "correct_siman_accuracy": 75.76,
+    "correct_part_count": 30,
+    "correct_part_accuracy": 90.91,
+    "correct_saif_count": 26,
+    "correct_saif_accuracy": 78.79,
+    "correct_all_count": 16,
+    "correct_all_accuracy": 48.48
+  },
+  "אה\"ע": {
+    "total_questions": 20,
+    "correct_answer_count": 16,
+    "correct_answer_accuracy": 80.0,
+    "correct_siman_count": 13,
+    "correct_siman_accuracy": 65.0,
+    "correct_part_count": 19,
+    "correct_part_accuracy": 95.0,
+    "correct_saif_count": 14,
+    "correct_saif_accuracy": 70.0,
+    "correct_all_count": 9,
+    "correct_all_accuracy": 45.0
+  },
+  "יו\"ד": {
+    "total_questions": 21,
+    "correct_answer_count": 12,
+    "correct_answer_accuracy": 57.14,
+    "correct_siman_count": 16,
+    "correct_siman_accuracy": 76.19,
+    "correct_part_count": 20,
+    "correct_part_accuracy": 95.24,
+    "correct_saif_count": 14,
+    "correct_saif_accuracy": 66.67,
+    "correct_all_count": 7,
+    "correct_all_accuracy": 33.33
+  },
+  "חו\"מ": {
+    "total_questions": 20,
+    "correct_answer_count": 16,
+    "correct_answer_accuracy": 80.0,
+    "correct_siman_count": 14,
+    "correct_siman_accuracy": 70.0,
+    "correct_part_count": 19,
+    "correct_part_accuracy": 95.0,
+    "correct_saif_count": 11,
+    "correct_saif_accuracy": 55.0,
+    "correct_all_count": 9,
+    "correct_all_accuracy": 45.0
+  },
+  "all": {
+    "total_questions": 94,
+    "correct_answer_count": 66,
+    "correct_answer_accuracy": 70.21,
+    "correct_siman_count": 68,
+    "correct_siman_accuracy": 72.34,
+    "correct_part_count": 88,
+    "correct_part_accuracy": 93.62,
+    "correct_saif_count": 65,
+    "correct_saif_accuracy": 69.15,
+    "correct_all_count": 41,
+    "correct_all_accuracy": 43.62
+  }
 }

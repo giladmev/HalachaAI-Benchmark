@@ -3,7 +3,7 @@ from typing import List, Dict
 import anthropic
 from utils.parsing_utils import parse_questions, parse_model_response, parse_source
 from utils.files_utils import load_results_from_csv, save_results_to_json, save_results_to_csv
-from utils.vis_utils import plot_model_comparison
+from utils.vis_utils import plot_model_comparison, plot_part_comparison
 from pathlib import Path
 import os
 import yaml
@@ -54,18 +54,18 @@ def ask_claude(client, model_name, question, allowed_answers, thinking = False):
 
 def compare_sources(true_source: str, model_source: str):
     """Compare true source and model source by siman and saif."""
-    true_phase, true_siman, true_saif = parse_source(true_source)
-    model_phase, model_siman, model_saif = parse_source(model_source)
+    true_part, true_siman, true_saif = parse_source(true_source)
+    model_part, model_siman, model_saif = parse_source(model_source)
 
     # If parsing failed
     if not true_siman or not model_siman:
         return False, False, False
 
-    phase_match = (true_phase == model_phase)
+    part_match = (true_part == model_part)
     siman_match = (true_siman == model_siman)
     saif_match = (true_saif == model_saif)
 
-    return phase_match, siman_match, saif_match
+    return part_match, siman_match, saif_match
 
 def enrich_result_row(row, allowed_answers):
     """
@@ -76,6 +76,12 @@ def enrich_result_row(row, allowed_answers):
     - correct_all: whether everything matches (answer + siman + saif)
     """
     # Normalize answers (remove spaces, unify form)
+    if row.get("model_answer") is None or row.get("true_answer") is None:
+        row["correct_answer"] = False
+        row["correct_siman"] = False
+        row["correct_saif"] = False
+        row["correct_all"] = False
+        return row
     true_answer = row.get("true_answer", "").strip()
     model_answer = row.get("model_answer", "").strip()
 
@@ -85,8 +91,8 @@ def enrich_result_row(row, allowed_answers):
     true_source = row.get("true_source", "")
     model_source = row.get("model_source", "")
 
-    phase_match, siman_match, saif_match = compare_sources(true_source, model_source)
-    row["correct_phase"] = phase_match
+    part_match, siman_match, saif_match = compare_sources(true_source, model_source)
+    row["correct_part"] = part_match
     row["correct_siman"] = siman_match
     row["correct_saif"] = saif_match
 
@@ -95,33 +101,39 @@ def enrich_result_row(row, allowed_answers):
 
     return row
 
-def calculate_statistics(results: List[Dict[str, str]]) -> Dict[str, float]:
-    total = len(results)
-    if total == 0:
-        print("No results to evaluate.")
-        return {}
-
-    stats = {"total_questions": total}
+def calculate_statistics(results: List[Dict[str, str]], parts) -> Dict[str, float]:
+    """
+    Calculate statistics for each part separately and overall.
+    Returns a dictionary with statistics for each part and a summary for all parts.
+    """
+    part_results = {part: [result for result in results if result.get("part") == part] for part in parts}
+    part_results["all"] = results  # All results
 
     check_fields = [
         'correct_answer',
         'correct_siman',
-        'correct_phase',
+        'correct_part',
         'correct_saif',
         'correct_all',
     ]
 
-    for field in check_fields:
-        correct_count = sum(1 for r in results if r.get(field) is True)
-        accuracy = (correct_count / total) * 100
-        stats[f"{field}_count"] = correct_count
-        stats[f"{field}_accuracy"] = round(accuracy, 2)
+    # Calculate statistics for each part
+    part_statistics = {}
+    for part, part_data in part_results.items():
+        if not part_data:
+            part_statistics[part] = {"total_questions": 0}
+            continue
 
-    print(f"Total Questions: {stats['total_questions']}")
-    for field in check_fields:
-        print(f"{field} - Correct: {stats[f'{field}_count']}/{stats['total_questions']} ({stats[f'{field}_accuracy']:.2f}%)")
+        total = len(part_data)
+        stats = {"total_questions": total}
 
-    return stats
+        for field in check_fields:
+            correct_count = sum(1 for r in part_data if r.get(field) is True)
+            accuracy = (correct_count / total) * 100 if total > 0 else 0
+            stats[f"{field}_count"] = correct_count
+            stats[f"{field}_accuracy"] = round(accuracy, 2)
+        part_statistics[part] = stats
+    return part_statistics
 
 def load_config(path="config.yaml"):
     with open(path, 'r') as f:
@@ -155,8 +167,18 @@ def main():
             for idx, q in enumerate(questions):
                 print(f"Processing question {idx+1}/{len(questions)}...")
 
-                model_response_text = ask_claude(client, model_name, q["question"], allowed_answers, thinking=thinking)
+                # Try up to 3 times in case of failure
+                for retry in range(3):
+                    model_response_text = ask_claude(client, model_name, q["question"], allowed_answers,
+                                                     thinking=thinking)
+                    if model_response_text is not None:
+                        break
+                    print(f"Retry {retry + 1}/3 for question {idx + 1}...")
+                    time.sleep(3)  # Wait between retries
+
                 if model_response_text is None:
+                    print(f"Failed to get response for question {idx + 1} after 3 attempts, skipping.")
+
                     continue
                 model_response = parse_model_response(model_response_text)
 
@@ -164,6 +186,7 @@ def main():
                     "original_question": q['question'],
                     "true_answer": q['answer'],
                     "true_source": q['source'],
+                    "part": next((p for p in config['parts'] if p in q['source']), None),
                     "model_full_response": model_response_text,
                     "model_answer": model_response.get('model_answer'),
                     "model_source": model_response.get('model_source'),
@@ -182,9 +205,10 @@ def main():
         save_results_to_csv(enriched_results, output_csv)
         save_results_to_json(enriched_results, output_json)
 
-        statistics = calculate_statistics(enriched_results)
+        statistics = calculate_statistics(enriched_results, config['parts'])
         save_results_to_json(statistics, results_summary_json)
-        all_models_results[model_name] = statistics
+        all_models_results[model_name] = statistics.get("all", {})
+        plot_part_comparison(statistics, model_name, output_base_dir)
 
     plot_model_comparison(all_models_results, output_base_dir)
 
