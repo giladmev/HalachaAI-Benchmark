@@ -8,14 +8,3 @@ questions_file: "questions.txt"
 model_names:
   - claude-3-7-sonnet-20250219
   - claude-sonnet-4-20250514
-
-parts:
-  - או"ח
-  - אה"ע
-  - יו"ד
-  - חו"מ
-
-allowed_answers:
-  - כן
-  - לא
-  - מחלוקת שו"ע-רמ"א

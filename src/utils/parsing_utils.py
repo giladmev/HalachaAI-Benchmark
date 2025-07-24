@@ -1,14 +1,8 @@
 import re
 from typing import List, Dict
-from constants import ALLOWED_ANSWERS
+from src.constants import ALLOWED_ANSWERS, PART_ALIASES
 import os
 
-PART_ALIASES = {
-    'או"ח': {'או"ח', 'אורח חיים', 'אור"ח', 'אוח'},
-    'יו"ד': {'יו"ד', 'יורה דעה', 'יור"ד', 'יוד'},
-    'אה"ע': {'אה"ע', 'אבן העזר', 'אבה"ע', 'אהע'},
-    'חו"מ': {'חו"מ', 'חושן משפט', 'חו"מ', 'חומ', 'חוש', 'חום'},
-}
 
 def parse_questions(file_path: str) -> List[Dict[str, str]]:
     """

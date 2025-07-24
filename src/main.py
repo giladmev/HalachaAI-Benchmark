@@ -1,6 +1,7 @@
 import time
 from typing import List, Dict
 import anthropic
+from src.constants import PARTS, ALLOWED_ANSWERS
 from utils.parsing_utils import parse_questions, parse_model_response, parse_source
 from utils.files_utils import load_results_from_csv, save_results_to_json, save_results_to_csv
 from utils.vis_utils import plot_model_comparison, plot_part_comparison
@@ -150,7 +151,6 @@ def main():
 
     questions_file = input_dir / config['questions_file']
     model_names = config['model_names']
-    allowed_answers = config['allowed_answers']
     all_models_results = {}
     for model_name in model_names:
         output_dir = output_base_dir / model_name
@@ -169,7 +169,7 @@ def main():
 
                 # Try up to 3 times in case of failure
                 for retry in range(3):
-                    model_response_text = ask_claude(client, model_name, q["question"], allowed_answers,
+                    model_response_text = ask_claude(client, model_name, q["question"], ALLOWED_ANSWERS,
                                                      thinking=thinking)
                     if model_response_text is not None:
                         break
@@ -186,7 +186,7 @@ def main():
                     "original_question": q['question'],
                     "true_answer": q['answer'],
                     "true_source": q['source'],
-                    "part": next((p for p in config['parts'] if p in q['source']), None),
+                    "part": next((p for p in PARTS if p in q['source']), None),
                     "model_full_response": model_response_text,
                     "model_answer": model_response.get('model_answer'),
                     "model_source": model_response.get('model_source'),
@@ -194,18 +194,18 @@ def main():
 
                 time.sleep(1)
 
-            enriched_results = [enrich_result_row(row, allowed_answers) for row in results]
+            enriched_results = [enrich_result_row(row, ALLOWED_ANSWERS) for row in results]
 
         else:
             print("Loading existing results from CSV...")
 
             results = load_results_from_csv(output_csv)  # Load existing results from the CSV file
-            enriched_results = [enrich_result_row(row, allowed_answers) for row in results]
+            enriched_results = [enrich_result_row(row, ALLOWED_ANSWERS) for row in results]
 
         save_results_to_csv(enriched_results, output_csv)
         save_results_to_json(enriched_results, output_json)
 
-        statistics = calculate_statistics(enriched_results, config['parts'])
+        statistics = calculate_statistics(enriched_results, PARTS)
         save_results_to_json(statistics, results_summary_json)
         all_models_results[model_name] = statistics.get("all", {})
         plot_part_comparison(statistics, model_name, output_base_dir)
