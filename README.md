@@ -5,7 +5,7 @@ This project evaluates the performance of an AI model (such as Claude or others)
 ## Project Purpose
 - To benchmark the accuracy of an AI model in answering Halachic questions.
 - To check the correctness at multiple levels:
-  - Whether the AI answered "Yes" or "No" correctly.
+  - Whether the AI answered "Yes", "No" or "disagreement" correctly.
   - Whether the AI cited the correct Siman (chapter) and Saif (paragraph) from Shulchan Aruch.
   - Full correctness (answer + source match).
 
@@ -62,9 +62,8 @@ We've evaluated models across all four parts of Shulchan Aruch (או"ח, יו"ד
 
 ### Part-Specific Performance
 Performance varies across different parts of Shulchan Aruch:
-
-- **או"ח (Orach Chaim)**: Highest source citation accuracy (75.76%)
-- **יו"ד (Yoreh Deah)**: Lowest answer accuracy (52-57%)
+- **Orach Chaim (או"ח)**: Highest source citation accuracy (75.76%)
+- **Yoreh Deah (יו"ד)**: Lowest overall accuracy (52-57%)
 - In all parts, both models correctly identified the appropriate section of Shulchan Aruch with very high accuracy (91-95% overall)
 
 ### Detailed Findings
@@ -72,6 +71,7 @@ Performance varies across different parts of Shulchan Aruch:
 - Saif (paragraph) identification is more challenging than Siman (chapter) identification
 - The models struggle more with Yoreh Deah questions compared to other sections
 - Full correctness (correct answer + acuurate source Saif and Siman) is achieved in less than half of all cases
+- Even when the models answer correctly, they frequently fail to pinpoint the exact Siman and Saif reference.
 
 ## Usage
 - By default, the project runs full evaluation (including API calls).
