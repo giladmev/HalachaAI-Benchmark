@@ -22,6 +22,8 @@ Contains a list of Halachic questions, expected answers, and sources.
   - structured to allow for straightforward answers.
   - story-style questions to ensure clarity and engagement.
 
+You can find example in Example of Error Case section below.
+
 ### API calls
 The project sends each question to the AI model through its API.
 
@@ -83,6 +85,21 @@ Performance varies across different parts of Shulchan Aruch:
 - The models struggle more with Yoreh Deah questions compared to other sections
 - Full correctness (correct answer + acuurate source Saif and Siman) is achieved in less than half of all cases
 - Even when the models answer correctly, they frequently fail to pinpoint the exact Siman and Saif reference.
+
+### Example of Error Case
+
+Here's a concrete example of an incorrect model response:
+
+- **Source**: Shulchan Aruch, Orach Chaim 8:15 states: "If his tallit falls off unintentionally, and he puts it back on, he must recite a blessing again."
+
+- **Question posed to the model**: "My tallit fell completely to the floor unintentionally during prayer. When I picked it up and put it on again, I didn't recite a new blessing because I thought the first blessing was still valid. Did I act according to Halacha?"
+
+- **Model's response**: The model incorrectly answered "Yes" (that the person acted correctly), directly contradicting the explicit ruling in Shulchan Aruch.
+
+- **Analysis**: Interestingly, the model correctly identified the source in Orach Chaim section 8, but cited the wrong Se'if (paragraph 14 instead of 15), leading to the opposite ruling. Se'if 14 discusses intentionally removing the tallit, while Se'if 15 addresses unintentional falling - exactly as in the question. The model confused these distinct scenarios, resulting in incorrect guidance.
+
+ 
+This example demonstrates how even when the model can locate the general area in the source material, it may still misinterpret the specific ruling or cite the wrong paragraph, leading to completely incorrect halachic guidance.
 
 ## Usage
 - By default, the project runs full evaluation (including API calls).
