@@ -14,13 +14,21 @@ This project evaluates the performance of an AI model (such as Claude or others)
 ### Input file (`questions.txt`)
 Contains a list of Halachic questions, expected answers, and sources.
 
+### Question Generation Process
+- Questions were carefully selected from well-known and clearly defined sections across all four parts of Shulchan Aruch (33 from Orach Chaim and appoximately 20 from each of the other parts).
+- Generated questions using AI models that:
+  - based on the Shulchan Aruch text and Rema's.
+  - designed to be clear and unambiguous.
+  - structured to allow for straightforward answers.
+  - story-style questions to ensure clarity and engagement.
+
 ### API calls
 The project sends each question to the AI model through its API.
 
 ### Evaluation
 Compares the AI's response to the ground truth:
 - Answer correctness.
-- Siman and Saif correctness.
+- Siman and Saif correctness, which Saif is checked only if the Siman is correct.
 
 ### Output files:
 - `results.csv` — Detailed results for each question.
@@ -50,25 +58,28 @@ We've evaluated models across all four parts of Shulchan Aruch (או"ח, יו"ד
 
 **The average accuracy across both tested models in answering halachic questions correctly is approximately 68.62%.**
 
-### Model Performance Comparison
+You can explore the complete results and detailed model outputs in the [output folder](https://github.com/giladmevo/halacha-ai-benchmark/tree/main/data/output).
 
+### Model Performance Comparison
 **Claude 3.7 Sonnet (February 2025)**:
 - Overall accuracy: 70% correct answers
-- Source citation accuracy: 72% correct Siman, 69% correct Saif
+- Source citation accuracy: 73% correct Siman, 78% correct Saif
 
 **Claude Sonnet 4 (May 2025)**:
 - Overall accuracy: 67% correct answers
-- Source citation accuracy: 61% correct Siman, 56% correct Saif
+- Source citation accuracy: 61% correct Siman, 61% correct Saif
+
+![Models Accuracy Comparison](data/output/models_accuracy_metrics.png)
 
 ### Part-Specific Performance
 Performance varies across different parts of Shulchan Aruch:
-- **Orach Chaim (או"ח)**: Highest source citation accuracy (75.76%)
+- **Orach Chaim (או"ח)**: Highest source citation accuracy (76%)
 - **Yoreh Deah (יו"ד)**: Lowest overall accuracy (52-57%)
-- In all parts, both models correctly identified the appropriate section of Shulchan Aruch with very high accuracy (91-95% overall)
 
+![Models Accuracy Comparison](data/output/claude-sonnet-4-20250514/part_accuracy_metrics.png)
 ### Detailed Findings
 - Claude 3.7 Sonnet outperforms Claude Sonnet 4 in most metrics, especially in source citation
-- Saif (paragraph) identification is more challenging than Siman (chapter) identification
+- Siman (chapter) identification is more challenging than Saif (paragraph) identification (Saif is checked only if the Siman is correct)
 - The models struggle more with Yoreh Deah questions compared to other sections
 - Full correctness (correct answer + acuurate source Saif and Siman) is achieved in less than half of all cases
 - Even when the models answer correctly, they frequently fail to pinpoint the exact Siman and Saif reference.

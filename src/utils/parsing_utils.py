@@ -80,7 +80,7 @@ def parse_model_response(response_text: str):
 def parse_source(source: str):
     """Parse source into (part, siman, saif), normalizing quotation marks and using aliases."""
     if not source:
-        return None, None, None
+        return None, [], []
 
     clean_source = re.sub(r"[׳״'\"]", "", source)
 
@@ -93,10 +93,10 @@ def parse_source(source: str):
         if part:
             break
 
-    match = re.search(r"([א-ת]+):([א-ת]+)", clean_source)
-    if match:
-        siman = match.group(1)
-        saif = match.group(2)
-        return part, siman, saif
+    matches = re.findall(r"([א-ת]+):([א-ת]+)", clean_source)
+    if matches:
+        simans = [match[0] for match in matches]
+        saifs = [match[1] for match in matches]
+        return part, simans, saifs
     else:
-        return part, None, None
+        return part, [], []

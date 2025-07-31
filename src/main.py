@@ -55,16 +55,21 @@ def ask_claude(client, model_name, question, allowed_answers, thinking = False):
 
 def compare_sources(true_source: str, model_source: str):
     """Compare true source and model source by siman and saif."""
-    true_part, true_siman, true_saif = parse_source(true_source)
-    model_part, model_siman, model_saif = parse_source(model_source)
+    true_part, true_simans, true_saifs = parse_source(true_source)
+    model_part, model_simans, model_saifs = parse_source(model_source)
 
     # If parsing failed
-    if not true_siman or not model_siman:
+    if not true_simans or not model_simans:
         return False, False, False
 
     part_match = (true_part == model_part)
-    siman_match = (true_siman == model_siman)
-    saif_match = (true_saif == model_saif)
+
+    # Check if any siman from true_simans exists in model_simans
+    siman_match = any(ts in model_simans for ts in true_simans)
+
+    # Check if any saif from true_saifs exists in model_saifs
+    # Only meaningful if we're looking at the same simans
+    saif_match = any(ts in model_saifs for ts in true_saifs) if siman_match else False
 
     return part_match, siman_match, saif_match
 
@@ -95,7 +100,10 @@ def enrich_result_row(row, allowed_answers):
     part_match, siman_match, saif_match = compare_sources(true_source, model_source)
     row["correct_part"] = part_match
     row["correct_siman"] = siman_match
-    row["correct_saif"] = saif_match
+    if siman_match:
+        row["correct_saif"] = saif_match
+    else:
+        row["correct_saif"] = "Irrelevant"  # If siman doesn't match, saif is irrelevant
 
     # Overall correctness: everything must be correct
     row["correct_all"] = row["correct_answer"] and row["correct_siman"] and row["correct_saif"]
@@ -114,7 +122,6 @@ def calculate_statistics(results: List[Dict[str, str]], parts) -> Dict[str, floa
         'correct_answer',
         'correct_siman',
         'correct_part',
-        'correct_saif',
         'correct_all',
     ]
 
@@ -133,6 +140,11 @@ def calculate_statistics(results: List[Dict[str, str]], parts) -> Dict[str, floa
             accuracy = (correct_count / total) * 100 if total > 0 else 0
             stats[f"{field}_count"] = correct_count
             stats[f"{field}_accuracy"] = round(accuracy, 2)
+
+        stats['correct_saif_count'] = sum(1 for r in part_data if r.get('correct_saif') is True)
+        accuracy = (stats['correct_saif_count'] / stats['correct_siman_count']) * 100 if  stats['correct_siman_count'] > 0 else 0
+        stats['correct_saif_accuracy'] = round(accuracy, 2)
+
         part_statistics[part] = stats
     return part_statistics
 

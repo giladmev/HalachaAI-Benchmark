@@ -10,7 +10,7 @@
     "correct_answer": false,
     "correct_part": false,
     "correct_siman": false,
-    "correct_saif": false,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -136,7 +136,7 @@
     "correct_answer": true,
     "correct_part": true,
     "correct_siman": false,
-    "correct_saif": true,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -248,7 +248,7 @@
     "correct_answer": true,
     "correct_part": true,
     "correct_siman": false,
-    "correct_saif": false,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -275,7 +275,7 @@
     "model_source": "שו\"ע או\"ח ט:א, י:א",
     "correct_answer": true,
     "correct_part": true,
-    "correct_siman": false,
+    "correct_siman": true,
     "correct_saif": false,
     "correct_all": false
   },
@@ -346,7 +346,7 @@
     "correct_answer": false,
     "correct_part": false,
     "correct_siman": false,
-    "correct_saif": false,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -360,7 +360,7 @@
     "correct_answer": true,
     "correct_part": false,
     "correct_siman": false,
-    "correct_saif": false,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -388,7 +388,7 @@
     "correct_answer": true,
     "correct_part": true,
     "correct_siman": false,
-    "correct_saif": true,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -402,7 +402,7 @@
     "correct_answer": true,
     "correct_part": true,
     "correct_siman": false,
-    "correct_saif": true,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -500,7 +500,7 @@
     "correct_answer": false,
     "correct_part": true,
     "correct_siman": false,
-    "correct_saif": true,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -514,7 +514,7 @@
     "correct_answer": true,
     "correct_part": true,
     "correct_siman": false,
-    "correct_saif": true,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -570,7 +570,7 @@
     "correct_answer": true,
     "correct_part": true,
     "correct_siman": false,
-    "correct_saif": false,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -598,7 +598,7 @@
     "correct_answer": true,
     "correct_part": false,
     "correct_siman": false,
-    "correct_saif": false,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -696,7 +696,7 @@
     "correct_answer": false,
     "correct_part": true,
     "correct_siman": false,
-    "correct_saif": true,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -724,7 +724,7 @@
     "correct_answer": true,
     "correct_part": true,
     "correct_siman": false,
-    "correct_saif": true,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -738,7 +738,7 @@
     "correct_answer": true,
     "correct_part": true,
     "correct_siman": false,
-    "correct_saif": false,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -766,7 +766,7 @@
     "correct_answer": true,
     "correct_part": true,
     "correct_siman": false,
-    "correct_saif": false,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -780,7 +780,7 @@
     "correct_answer": true,
     "correct_part": true,
     "correct_siman": false,
-    "correct_saif": false,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -878,7 +878,7 @@
     "correct_answer": false,
     "correct_part": false,
     "correct_siman": false,
-    "correct_saif": false,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -920,7 +920,7 @@
     "correct_answer": true,
     "correct_part": true,
     "correct_siman": false,
-    "correct_saif": false,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -934,7 +934,7 @@
     "correct_answer": true,
     "correct_part": true,
     "correct_siman": false,
-    "correct_saif": false,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -976,7 +976,7 @@
     "correct_answer": true,
     "correct_part": true,
     "correct_siman": false,
-    "correct_saif": true,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -1046,7 +1046,7 @@
     "correct_answer": true,
     "correct_part": true,
     "correct_siman": false,
-    "correct_saif": false,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -1060,7 +1060,7 @@
     "correct_answer": false,
     "correct_part": true,
     "correct_siman": false,
-    "correct_saif": true,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -1074,7 +1074,7 @@
     "correct_answer": true,
     "correct_part": true,
     "correct_siman": false,
-    "correct_saif": true,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -1102,7 +1102,7 @@
     "correct_answer": false,
     "correct_part": false,
     "correct_siman": false,
-    "correct_saif": false,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
@@ -1172,7 +1172,7 @@
     "correct_answer": true,
     "correct_part": true,
     "correct_siman": false,
-    "correct_saif": true,
+    "correct_saif": "Irrelevant",
     "correct_all": false
   },
   {
